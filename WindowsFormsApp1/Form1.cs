@@ -6,16 +6,11 @@ using LogicForChessGame.Figures;
 using LogicForChessGameFrameWork;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsApp1.Enums;
 using WindowsFormsApp1.Properties;
@@ -81,22 +76,9 @@ namespace WindowsFormsApp1
             {
                 this.chessFieldSelected = (ChessField)sender;
 
-                List<PositionOnTheBoard> attackingPos = new List<PositionOnTheBoard>();
-
-                for (char horizontal = 'a'; horizontal <= 'h'; horizontal++)
-                {
-                    for (int vertical = 1; vertical <= 8; vertical++)
-                    {
-                        if (this.chessGame.ValidateMove(new NormalMovePositions(this.chessFieldSelected.positionOnTheBoard
-                            .Horizontal, this.chessFieldSelected.positionOnTheBoard.Vertical
-                            , horizontal, vertical),
-                            this.chessFieldSelected.chessFigure
-                    , (Colors)this.chessFieldSelected.chessFigureColor) == null)
-                        {
-                            attackingPos.Add(new PositionOnTheBoard(horizontal, vertical));
-                        }
-                    }
-                }
+                List<PositionOnTheBoard> attackingPos =
+                    this.chessGame.GetAllPossiblePositionsOfPlacingTheFigure(this.chessFieldSelected.positionOnTheBoard
+                    , this.chessFieldSelected.chessFigure, (Colors)this.chessFieldSelected.chessFigureColor);
 
                 foreach (var field in this.board)
                 {
@@ -373,13 +355,13 @@ namespace WindowsFormsApp1
 
         private void InitialPlayGameButton_Click(object sender, EventArgs e)
         {
-                if (!this.dbContext.Users.Any(u => u.Username == user1TextBox.Text)
-                    || !this.dbContext.Users.Any(u => u.Username == user2TextBox.Text))
-                {
-                    MessageBox.Show("Invalid user");
-                    return;
-                }
-            
+            if (!this.dbContext.Users.Any(u => u.Username == user1TextBox.Text)
+                || !this.dbContext.Users.Any(u => u.Username == user2TextBox.Text))
+            {
+                MessageBox.Show("Invalid user");
+                return;
+            }
+
             this.ConfigureGameTimeBox.Visible = true;
             this.StartGameBox.Visible = false;
             this.chessGame = new ChessGame(user1TextBox.Text, user2TextBox.Text);
@@ -403,6 +385,15 @@ namespace WindowsFormsApp1
 
         private void SignInButton_Click(object sender, EventArgs e)
         {
+            User user = this.dbContext.Users.Include(u => u.UsersGamesLikeBlack).Include(u => u.UsersGamesLikeWhite)
+                .Where(u => u.Username == usernameTextBox.Text && u.Password ==
+            passwordTextBox.Text).FirstOrDefault();
+            if (user == null)
+            {
+                MessageBox.Show("Invalid user");
+                return;
+            }
+
             this.usernameLabel.Visible = false;
             this.usernameTextBox.Visible = false;
             this.passwordLabel.Visible = false;
@@ -411,19 +402,17 @@ namespace WindowsFormsApp1
             this.ChooseUserGameBox.Visible = true;
             this.StartGameBox.Visible = false;
             this.nextButton.Visible = false;
-            
-                User user = this.dbContext.Users.Include(u => u.UsersGamesLikeBlack).Include(u => u.UsersGamesLikeWhite)
-                    .Where(u => u.Username == usernameTextBox.Text && u.Password ==
-                passwordTextBox.Text).FirstOrDefault();
-                IList<UsersGame> usersGames = user.UsersGamesLikeWhite.Concat(user.UsersGamesLikeBlack).ToList();
-
-                UsersGamesListBox.DataSource = usersGames.Select(ug => $"{this.dbContext.Users.Find(ug.FirstUserId).Username} " +
-                $"{this.dbContext.Users.Find(ug.SecondUserId).Username}" +
-                $" {ug.GameId} {ug.Result}")
-                    .ToList();
-
 
             
+            IList<UsersGame> usersGames = user.UsersGamesLikeWhite.Concat(user.UsersGamesLikeBlack).ToList();
+
+            UsersGamesListBox.DataSource = usersGames.Select(ug => $"{this.dbContext.Users.Find(ug.FirstUserId).Username} " +
+            $"{this.dbContext.Users.Find(ug.SecondUserId).Username}" +
+            $" {ug.GameId} {ug.Result}")
+                .ToList();
+
+
+
         }
 
         private void ReplayGameButton_Click(object sender, EventArgs e)
@@ -431,22 +420,22 @@ namespace WindowsFormsApp1
             string gameAsString = (string)UsersGamesListBox.SelectedItem;
 
             int gameId = int.Parse(gameAsString.Split()[2]);
-            
-                Game game = this.dbContext.Games.Include(g => g.Castlings)
-                    .Include(g => g.NormalMoves)
-                    .Include(g => g.ProducingPawns)
-                    .FirstOrDefault(g => g.Id == gameId);
-                List<NormalMoveDabModel> moves = game.NormalMoves.ToList();
-                List<Castling> castlings = game.Castlings.ToList();
-                List<ProducingPawn> producingPawns = game.ProducingPawns.ToList();
 
-                this.chessGame = new ChessGame("", "");
-                this.chessGame.movesInTheGame = moves.Select(m => (BaseMove)m).ToList();
-                this.InitialzeBoard(this.chessGame.chessBoard);
-                this.BoardPanel.Visible = true;
-                moveCounter = 0;
+            Game game = this.dbContext.Games.Include(g => g.Castlings)
+                .Include(g => g.NormalMoves)
+                .Include(g => g.ProducingPawns)
+                .FirstOrDefault(g => g.Id == gameId);
+            List<NormalMoveDabModel> moves = game.NormalMoves.ToList();
+            List<Castling> castlings = game.Castlings.ToList();
+            List<ProducingPawn> producingPawns = game.ProducingPawns.ToList();
 
-            
+            this.chessGame = new ChessGame("", "");
+            this.chessGame.movesInTheGame = moves.Select(m => (BaseMove)m).ToList();
+            this.InitialzeBoard(this.chessGame.chessBoard);
+            this.BoardPanel.Visible = true;
+            moveCounter = 0;
+
+
 
             this.nextButton.Visible = true;
 
@@ -458,6 +447,12 @@ namespace WindowsFormsApp1
 
             List<NormalMoveDabModel> moves = this.chessGame.movesInTheGame.Select(m => (NormalMoveDabModel)m)
                 .OrderBy(m => m.OrderInTheGame).ToList();
+
+            if (this.moveCounter > moves.Count - 1)
+            {
+                MessageBox.Show("That's the end of the game");
+                return;
+            }
 
             Assembly assembly = Assembly.LoadFile(@"D:\C#\ChessGame\ChessGame\LogicForChessGameFrameWork\obj\Debug\LogicForChessGameFrameWork.dll");
             string typeName = moves[moveCounter].FigureType;

@@ -42,9 +42,9 @@ namespace LogicForChessGame
         public InvalidMoveReason? ValidateMove(NormalMovePositions positions, Type FigureType, Colors color)
         {
             Figure figureToMove = this.chessBoard.GetFigureOnPosition(positions.InitialPosition);
-            Type actuelFigureType = figureToMove.GetType();
+            Type actualFigureType = figureToMove.GetType();
             Figure figureOnTargetPosition = this.chessBoard.GetFigureOnPosition(positions.TargetPosition);
-            if (figureToMove == null || actuelFigureType.FullName != FigureType.FullName || figureToMove.color != color)
+            if (figureToMove == null || actualFigureType.FullName != FigureType.FullName || figureToMove.color != color)
             {
                 return InvalidMoveReason.ThereIsntSuchFigureAndColorOnTheGivenPosition;
             }
@@ -104,6 +104,28 @@ namespace LogicForChessGame
 
             return null;
             
+        }
+
+        public List<PositionOnTheBoard> GetAllPossiblePositionsOfPlacingTheFigure(PositionOnTheBoard positionOnTheBoard
+            ,Type figureType,Colors chessFigureColor)
+        {
+            List<PositionOnTheBoard> attackingPos = new List<PositionOnTheBoard>();
+
+            for (char horizontal = 'a'; horizontal <= 'h'; horizontal++)
+            {
+                for (int vertical = 1; vertical <= 8; vertical++)
+                {
+                    if (this.ValidateMove(new NormalMovePositions(positionOnTheBoard
+                        .Horizontal, positionOnTheBoard.Vertical
+                        , horizontal, vertical),
+                        figureType
+                , chessFigureColor) == null)
+                    {
+                        attackingPos.Add(new PositionOnTheBoard(horizontal, vertical));
+                    }
+                }
+            }
+            return attackingPos;
         }
 
         public InvalidMoveReason? ValidateMoveWithoutCheck(NormalMovePositions positions, Type FigureType, Colors color,ChessBoard chessBoardParam)
@@ -320,5 +342,24 @@ namespace LogicForChessGame
                 this.PlayerOnTurn = ChangePlayer();
             
         }
+
+        //public void ValidateCastling(PositionOnTheBoard kingPosition, PositionOnTheBoard rookPosition
+        //    , Colors colorOfTheFigures)
+        //{
+        //    Figure kingFigure = this.chessBoard.GetFigureOnPosition(kingPosition);
+        //    Figure rookFigure = this.chessBoard.GetFigureOnPosition(rookPosition);
+        //    Type actualKingFigureType = kingFigure.GetType();
+        //    Type actualRookFigureType = rookFigure.GetType();
+
+        //    if (kingFigure == null || actualKingFigureType.FullName != typeof(King).FullName || kingFigure.color != colorOfTheFigures)
+        //    {
+        //        return InvalidMoveReason.ThereIsntSuchFigureAndColorOnTheGivenPosition;
+        //    }
+        //    if (figureOnTargetPosition != null &&
+        //        (figureOnTargetPosition.GetType() == typeof(King) || figureOnTargetPosition.color == figureToMove.color))
+        //    {
+        //        return InvalidMoveReason.TheFigureOnTheTargetPositionIsFriendlyOrEnemyKing;
+        //    }
+        //}
     }
 }
