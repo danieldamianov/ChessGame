@@ -343,23 +343,143 @@ namespace LogicForChessGame
             
         }
 
-        //public void ValidateCastling(PositionOnTheBoard kingPosition, PositionOnTheBoard rookPosition
-        //    , Colors colorOfTheFigures)
-        //{
-        //    Figure kingFigure = this.chessBoard.GetFigureOnPosition(kingPosition);
-        //    Figure rookFigure = this.chessBoard.GetFigureOnPosition(rookPosition);
-        //    Type actualKingFigureType = kingFigure.GetType();
-        //    Type actualRookFigureType = rookFigure.GetType();
 
-        //    if (kingFigure == null || actualKingFigureType.FullName != typeof(King).FullName || kingFigure.color != colorOfTheFigures)
-        //    {
-        //        return InvalidMoveReason.ThereIsntSuchFigureAndColorOnTheGivenPosition;
-        //    }
-        //    if (figureOnTargetPosition != null &&
-        //        (figureOnTargetPosition.GetType() == typeof(King) || figureOnTargetPosition.color == figureToMove.color))
-        //    {
-        //        return InvalidMoveReason.TheFigureOnTheTargetPositionIsFriendlyOrEnemyKing;
-        //    }
-        //}
+        public PositionOnTheBoard GetPossiblePositionOfKingWhenCastlingTheRook(PositionOnTheBoard rookPosition,
+            Colors rookFigureColor)
+        {
+            if(rookFigureColor == Colors.White)
+            {
+                if (this.IsValidCastling(new PositionOnTheBoard('e',1),rookPosition,rookFigureColor))
+                {
+                    return new PositionOnTheBoard('e', 1);
+                }
+            }
+            else if(rookFigureColor == Colors.Black)
+            {
+                if (this.IsValidCastling(new PositionOnTheBoard('e', 8), rookPosition, rookFigureColor))
+                {
+                    return new PositionOnTheBoard('e', 8);
+                }
+            }
+            return null;
+        }
+
+        public List<PositionOnTheBoard> GetAllPossiblePositionsOfRookWhenCastlingTheKing(PositionOnTheBoard kingPosition,
+             Colors kingFigureColor)
+        {
+            List<PositionOnTheBoard> rookPositions = new List<PositionOnTheBoard>();
+
+            for (char horizontal = 'a'; horizontal <= 'h'; horizontal++)
+            {
+                for (int vertical = 1; vertical <= 8; vertical++)
+                {
+                    if (this.IsValidCastling(kingPosition,new PositionOnTheBoard(horizontal,vertical),kingFigureColor))
+                    {
+                        rookPositions.Add(new PositionOnTheBoard(horizontal, vertical));
+                    }
+                }
+            }
+
+            return rookPositions;
+        }
+
+        public bool MakeCastling(PositionOnTheBoard kingPosition, PositionOnTheBoard rookPosition
+            , Colors colorOfTheFigures)
+        {
+            if (this.IsValidCastling(kingPosition,rookPosition,colorOfTheFigures) == false)
+            {
+                return false;
+            }
+            Figure kingFigure = this.chessBoard.GetFigureOnPosition(kingPosition);
+            Figure rookFigure = this.chessBoard.GetFigureOnPosition(rookPosition);
+
+            this.chessBoard.RemoveFigureOnPosition(kingPosition);
+            this.chessBoard.RemoveFigureOnPosition(rookPosition);
+
+            if (colorOfTheFigures == Colors.White)
+            {
+                if (rookPosition.Horizontal == 'a')
+                {
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('c', 1), kingFigure);
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('d', 1), rookFigure);
+                }
+                else if(rookPosition.Horizontal == 'h')
+                {
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('g', 1), kingFigure);
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('f', 1), rookFigure);
+                }
+            }
+            else if(colorOfTheFigures == Colors.Black)
+            {
+                if (rookPosition.Horizontal == 'a')
+                {
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('c', 8), kingFigure);
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('d', 8), rookFigure);
+                }
+                else if (rookPosition.Horizontal == 'h')
+                {
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('g', 8), kingFigure);
+                    this.chessBoard.PutFigureOnPosition(new PositionOnTheBoard('f', 8), rookFigure);
+                }
+            }
+            this.PlayerOnTurn = ChangePlayer();
+            return true;
+        }
+
+        private bool IsValidCastling(PositionOnTheBoard kingPosition, PositionOnTheBoard rookPosition
+            , Colors colorOfTheFigures)
+        {
+            Figure kingFigure = this.chessBoard.GetFigureOnPosition(kingPosition);
+            Figure rookFigure = this.chessBoard.GetFigureOnPosition(rookPosition);
+            Type actualKingFigureType = kingFigure?.GetType();
+            Type actualRookFigureType = rookFigure?.GetType();
+
+            if (kingFigure == null || actualKingFigureType.FullName != typeof(King).FullName || kingFigure.color != colorOfTheFigures)
+            {
+                return false;
+            }
+            if (rookFigure == null || actualRookFigureType.FullName != typeof(Rook).FullName || rookFigure.color != colorOfTheFigures)
+            {
+                return false;
+            }
+            if (((King)kingFigure).HasBeenMovedFromTheStartOfTheGame || ((Rook)rookFigure).HasBeenMovedFromTheStartOfTheGame)
+            {
+                return false;
+            }
+
+            if (this.CheckForCheck(this.chessBoard, colorOfTheFigures))
+            {
+                return true;
+            }
+            //if (figureOnTargetPosition != null &&
+            //    (figureOnTargetPosition.GetType() == typeof(King) || figureOnTargetPosition.color == figureToMove.color))
+            //{
+            //    return InvalidMoveReason.TheFigureOnTheTargetPositionIsFriendlyOrEnemyKing;
+            //}
+            List<PositionOnTheBoard> positionOnTheBoardBetweenRookAndKingAndRookPosition = ((Rook)rookFigure).GetPositionsInTheWayOfMove
+                (new NormalMovePositions(rookPosition.Horizontal, rookPosition.Vertical, kingPosition.Horizontal, kingPosition.Vertical));
+
+            positionOnTheBoardBetweenRookAndKingAndRookPosition.Add(rookPosition);
+
+            foreach (var pos in positionOnTheBoardBetweenRookAndKingAndRookPosition)
+            {
+                if (pos.Equals(rookPosition) == false)
+                {
+                    if (this.chessBoard.GetFigureOnPosition(pos) != null)
+                    {
+                        return false;
+                    }
+                }
+                
+                var virtualBoard = this.chessBoard.GetVirtualChessBoardAfterMove(new NormalMovePositions
+                    (kingPosition.Horizontal, kingPosition.Vertical, pos.Horizontal, pos.Vertical));
+                if (this.CheckForCheck(virtualBoard,colorOfTheFigures))
+                {
+                    return false;
+                }
+
+            }
+            return true;
+        }
     }
 }

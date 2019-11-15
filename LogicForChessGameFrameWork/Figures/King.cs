@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 using LogicForChessGame.Enums;
+using LogicForChessGameFrameWork.Figures.Interfaces;
 
 namespace LogicForChessGame.Figures
 {
-    internal class King : Figure
+    public class King : Figure,ICastlingFigure
     {
         public King(Colors color) : base(color)
         {
+            this.HasBeenMovedFromTheStartOfTheGame = false;
         }
 
         public override char Sign => 'Ц';
+
+        public bool HasBeenMovedFromTheStartOfTheGame { get ; set; }
 
         public override bool AreMovePositionsPossible(NormalMovePositions move)
         {

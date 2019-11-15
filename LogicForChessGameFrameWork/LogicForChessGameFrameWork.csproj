@@ -48,6 +48,7 @@
     <Compile Include="Exceptions\InvalidMoveException.cs" />
     <Compile Include="Figures\Bishop.cs" />
     <Compile Include="Figures\Figure.cs" />
+    <Compile Include="Figures\Interfaces\ICastlingFigure.cs" />
     <Compile Include="Figures\Interfaces\IUnableToJump.cs" />
     <Compile Include="Figures\King.cs" />
     <Compile Include="Figures\Knight.cs" />

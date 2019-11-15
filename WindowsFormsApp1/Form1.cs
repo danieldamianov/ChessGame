@@ -80,6 +80,25 @@ namespace WindowsFormsApp1
                     this.chessGame.GetAllPossiblePositionsOfPlacingTheFigure(this.chessFieldSelected.positionOnTheBoard
                     , this.chessFieldSelected.chessFigure, (Colors)this.chessFieldSelected.chessFigureColor);
 
+                if (this.chessFieldSelected.chessFigure.FullName == typeof(King).FullName)
+                {
+                    attackingPos.AddRange(this.chessGame.GetAllPossiblePositionsOfRookWhenCastlingTheKing(this.chessFieldSelected.positionOnTheBoard
+                        , (Colors)this.chessFieldSelected.chessFigureColor));
+                }
+
+                if (this.chessFieldSelected.chessFigure.FullName == typeof(Rook).FullName)
+                {
+                    PositionOnTheBoard kingPos = this.chessGame.GetPossiblePositionOfKingWhenCastlingTheRook(this.chessFieldSelected.positionOnTheBoard
+                        , (Colors)this.chessFieldSelected.chessFigureColor);
+
+                    if (kingPos != null)
+                    {
+                        attackingPos.Add(kingPos);
+                    }
+                    attackingPos.AddRange(this.chessGame.GetAllPossiblePositionsOfRookWhenCastlingTheKing(this.chessFieldSelected.positionOnTheBoard
+                        , (Colors)this.chessFieldSelected.chessFigureColor));
+                }
+
                 foreach (var field in this.board)
                 {
                     if (((ChessField)field).positionOnTheBoard.Equals(this.chessFieldSelected.positionOnTheBoard) == false
@@ -96,46 +115,61 @@ namespace WindowsFormsApp1
             else
             {
 
-                var resultFormMove = this.chessGame.NormalMove(new NormalMovePositions(this.chessFieldSelected.positionOnTheBoard.Horizontal, this.chessFieldSelected.positionOnTheBoard.Vertical, ((ChessField)sender).positionOnTheBoard.Horizontal, ((ChessField)sender).positionOnTheBoard.Vertical)
+                if (this.chessFieldSelected.chessFigure.FullName == typeof(King).FullName
+                    && this.chessGame.MakeCastling(this.chessFieldSelected.positionOnTheBoard,
+                        ((ChessField)sender).positionOnTheBoard, (Colors)this.chessFieldSelected.chessFigureColor)) ;
+                else if (this.chessFieldSelected.chessFigure.FullName == typeof(Rook).FullName
+                    && this.chessGame.MakeCastling(
+                           ((ChessField)sender).positionOnTheBoard, this.chessFieldSelected.positionOnTheBoard
+                           , (Colors)this.chessFieldSelected.chessFigureColor));
+                else
+                {
+                    var resultFormMove = this.chessGame.NormalMove(new NormalMovePositions
+                    (this.chessFieldSelected.positionOnTheBoard.Horizontal,
+                    this.chessFieldSelected.positionOnTheBoard.Vertical,
+                    ((ChessField)sender).positionOnTheBoard.Horizontal,
+                    ((ChessField)sender).positionOnTheBoard.Vertical)
                 , chessFieldSelected.chessFigure, (Colors)chessFieldSelected.chessFigureColor);
 
-                if (resultFormMove.HasTheFigurePawnProducedItself == true)
-                {
-                    Figure figureChosen = null;
-                    DialogResult dialogResult = MessageBox.Show("Do you want to get a QUEEN?", "", MessageBoxButtons.YesNo);
-                    if (dialogResult == DialogResult.Yes)
+                    if (resultFormMove.HasTheFigurePawnProducedItself == true)
                     {
-                        figureChosen = new Queen((Colors)chessFieldSelected.chessFigureColor);
-                    }
-                    else
-                    {
-                        DialogResult dialogResult2 = MessageBox.Show("Do you want to get a ROOK?", "", MessageBoxButtons.YesNo);
-                        if (dialogResult2 == DialogResult.Yes)
+                        Figure figureChosen = null;
+                        DialogResult dialogResult = MessageBox.Show("Do you want to get a QUEEN?", "", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
                         {
-                            figureChosen = new Rook((Colors)chessFieldSelected.chessFigureColor);
+                            figureChosen = new Queen((Colors)chessFieldSelected.chessFigureColor);
                         }
                         else
                         {
-
-                            DialogResult dialogResult3 = MessageBox.Show("Do you want to get a BISHOP?", "", MessageBoxButtons.YesNo);
-                            if (dialogResult3 == DialogResult.Yes)
+                            DialogResult dialogResult2 = MessageBox.Show("Do you want to get a ROOK?", "", MessageBoxButtons.YesNo);
+                            if (dialogResult2 == DialogResult.Yes)
                             {
-                                figureChosen = new Bishop((Colors)chessFieldSelected.chessFigureColor);
+                                figureChosen = new Rook((Colors)chessFieldSelected.chessFigureColor);
                             }
                             else
                             {
 
-                                figureChosen = new Knight((Colors)chessFieldSelected.chessFigureColor);
+                                DialogResult dialogResult3 = MessageBox.Show("Do you want to get a BISHOP?", "", MessageBoxButtons.YesNo);
+                                if (dialogResult3 == DialogResult.Yes)
+                                {
+                                    figureChosen = new Bishop((Colors)chessFieldSelected.chessFigureColor);
+                                }
+                                else
+                                {
+
+                                    figureChosen = new Knight((Colors)chessFieldSelected.chessFigureColor);
+
+                                }
 
                             }
 
                         }
 
+                        this.chessGame.ProducePawn(new PositionOnTheBoard(((ChessField)sender).positionOnTheBoard.Horizontal, ((ChessField)sender).positionOnTheBoard.Vertical)
+                            , figureChosen, figureChosen.color);
                     }
-
-                    this.chessGame.ProducePawn(new PositionOnTheBoard(((ChessField)sender).positionOnTheBoard.Horizontal, ((ChessField)sender).positionOnTheBoard.Vertical)
-                        , figureChosen, figureChosen.color);
                 }
+                
                 Colors chessFigureColor = (Colors)chessFieldSelected.chessFigureColor;
 
                 this.InitialzeBoard(this.chessGame.chessBoard);

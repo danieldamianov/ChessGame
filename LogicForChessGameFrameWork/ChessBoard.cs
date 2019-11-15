@@ -2,6 +2,7 @@
 using LogicForChessGame.Enums;
 using LogicForChessGame.Exceptions;
 using LogicForChessGame.Figures;
+using LogicForChessGameFrameWork.Figures.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -115,6 +116,23 @@ namespace LogicForChessGameFrameWork
             ValidatePosition(positionOnTheBoard);
 
             board[8 - positionOnTheBoard.Vertical, positionOnTheBoard.Horizontal - 'a'] = figure;
+
+            if (figure is ICastlingFigure)
+            {
+                ((ICastlingFigure)figure).HasBeenMovedFromTheStartOfTheGame = true;
+            }
+        }
+
+        public void PutFigureOnPositionWithoutMovingItActualy(PositionOnTheBoard positionOnTheBoard, Figure figure)
+        {
+            ValidatePosition(positionOnTheBoard);
+
+            board[8 - positionOnTheBoard.Vertical, positionOnTheBoard.Horizontal - 'a'] = figure;
+
+            //if (figure is ICastlingFigure)
+            //{
+            //    ((ICastlingFigure)figure).HasBeenMovedFromTheStartOfTheGame = true;
+            //}
         }
 
         public ChessBoard GetVirtualChessBoardAfterMove(NormalMovePositions normalMove)
@@ -122,7 +140,7 @@ namespace LogicForChessGameFrameWork
             ChessBoard chessBoard = CopyCurrentChessBoard();
             var figure = chessBoard.GetFigureOnPosition(normalMove.InitialPosition);
             chessBoard.RemoveFigureOnPosition(normalMove.InitialPosition);
-            chessBoard.PutFigureOnPosition(normalMove.TargetPosition, figure);
+            chessBoard.PutFigureOnPositionWithoutMovingItActualy(normalMove.TargetPosition, figure);
 
             return chessBoard;
         }

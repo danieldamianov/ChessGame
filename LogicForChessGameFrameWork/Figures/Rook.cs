@@ -7,13 +7,16 @@ using LogicForChessGameFrameWork.Figures.Interfaces;
 
 namespace LogicForChessGame.Figures
 {
-    public class Rook : Figure, IUnableToJump
+    public class Rook : Figure, IUnableToJump, ICastlingFigure
     {
         public Rook(Colors color) : base(color)
         {
+            this.HasBeenMovedFromTheStartOfTheGame = false;
         }
 
         public override char Sign => 'T';
+
+        public bool HasBeenMovedFromTheStartOfTheGame { get; set; }
 
         public override bool AreMovePositionsPossible(NormalMovePositions move)
         {
