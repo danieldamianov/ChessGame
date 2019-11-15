@@ -1,5 +1,4 @@
-﻿using DatabaseModel;
-using Microsoft.EntityFrameworkCore;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +15,11 @@ namespace WindowsFormsApp1
         [STAThread]
         static void Main()
         {
-            using (ChessDbContext dbContext = new ChessDbContext())
-            {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new Form1(dbContext)); 
-            }
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+
         }
     }
 }

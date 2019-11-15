@@ -1,5 +1,4 @@
-﻿using DatabaseModel.Modles;
-using LogicForChessGame.Enums;
+﻿using LogicForChessGame.Enums;
 using LogicForChessGame.Figures;
 using LogicForChessGameFrameWork;
 using LogicForChessGameFrameWork.Enums;
@@ -16,26 +15,20 @@ namespace LogicForChessGame
 
         public ChessBoard chessBoard;
 
-        public string User1WhitesName { get; set; }
-        public string User2BlacksName { get; set; }
+        
         private int counterOfTheMoves;
 
-        public List<BaseMove> movesInTheGame;
-
-        public ChessGame(string username1,string username2)
+        public ChessGame()
         {
             this.PlayerOnTurn = Colors.White;
             this.chessBoard = new ChessBoard();
-            User1WhitesName = username1;
-            User2BlacksName = username2;
+            
             this.counterOfTheMoves = 1;
-            this.movesInTheGame = new List<BaseMove>();
         }
 
         public void ProducePawn(PositionOnTheBoard positionOnTheBoard,Figure prodeucedFigure,Colors colors)
         {
             this.chessBoard.PutFigureOnPosition(positionOnTheBoard, prodeucedFigure);
-            this.movesInTheGame.Add(new ProducingPawn() { OrderInTheGame = this.counterOfTheMoves});
             this.counterOfTheMoves++;
         }
 
@@ -291,9 +284,7 @@ namespace LogicForChessGame
                 chessBoard.RemoveFigureOnPosition(positions.InitialPosition);
                 chessBoard.PutFigureOnPosition(positions.TargetPosition, figure);
 
-                this.movesInTheGame.Add(new NormalMoveDabModel(positions.InitialPosition.Horizontal
-                    ,positions.InitialPosition.Vertical,positions.TargetPosition.Horizontal,positions.TargetPosition.Vertical
-                    ,FigureType.Name,color.ToString(),this.counterOfTheMoves));
+                
 
                 this.counterOfTheMoves++;
 
