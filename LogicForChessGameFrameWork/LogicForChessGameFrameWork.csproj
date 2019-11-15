@@ -60,11 +60,5 @@
     <Compile Include="PositionOnTheBoard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DatabaseModel\DatabaseModel.csproj">
-      <Project>{7AF3E0A2-FCF5-4299-B8CF-A390E4358096}</Project>
-      <Name>DatabaseModel</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

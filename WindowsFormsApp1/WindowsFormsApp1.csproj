@@ -164,10 +164,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DatabaseModel\DatabaseModel.csproj">
-      <Project>{7AF3E0A2-FCF5-4299-B8CF-A390E4358096}</Project>
-      <Name>DatabaseModel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LogicForChessGameFrameWork\LogicForChessGameFrameWork.csproj">
       <Project>{0def4cf7-e0bc-40bd-b91c-2c90e4df767a}</Project>
       <Name>LogicForChessGameFrameWork</Name>

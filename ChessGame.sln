@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicForChessGameFrameWork"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SandBox", "SandBox\SandBox.csproj", "{F1B3DAE9-FDBE-403A-A25C-16637EA18FA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseModel", "DatabaseModel\DatabaseModel.csproj", "{7AF3E0A2-FCF5-4299-B8CF-A390E4358096}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{F1B3DAE9-FDBE-403A-A25C-16637EA18FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1B3DAE9-FDBE-403A-A25C-16637EA18FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1B3DAE9-FDBE-403A-A25C-16637EA18FA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7AF3E0A2-FCF5-4299-B8CF-A390E4358096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7AF3E0A2-FCF5-4299-B8CF-A390E4358096}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7AF3E0A2-FCF5-4299-B8CF-A390E4358096}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7AF3E0A2-FCF5-4299-B8CF-A390E4358096}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
