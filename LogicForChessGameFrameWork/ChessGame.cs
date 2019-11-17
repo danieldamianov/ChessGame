@@ -449,7 +449,7 @@ namespace LogicForChessGame
 
             if (this.CheckForCheck(this.chessBoard, colorOfTheFigures))
             {
-                return true;
+                return false;
             }
             //if (figureOnTargetPosition != null &&
             //    (figureOnTargetPosition.GetType() == typeof(King) || figureOnTargetPosition.color == figureToMove.color))
